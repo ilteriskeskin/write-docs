@@ -1,0 +1,50 @@
+* {
+    color: #f8b24f;
+    font-weight: 600;
+}
+
+table, td, th, tr {
+    color: #f8b24f;
+}
+
+body {
+    background-color: #303960;
+}
+
+hr {
+    border-top: 1px solid #e5e5e5;
+}
+
+code {
+    font-size: 18px;
+}
+
+.main {
+    margin-top: 100px;
+}
+
+.homeMain {
+    margin-top: 200px;
+}
+
+.mainTitle {
+    margin-bottom: 50px;
+}
+
+.homeTitle {
+    text-align: center;
+}
+
+.homeP {
+    text-align: center;
+    font-size: 18px;
+}
+
+#output {
+    color: #f8b24f;
+}
+
+.mainContainer {
+    margin-left: 10%;
+    margin-right: 10%;
+}
