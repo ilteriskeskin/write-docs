@@ -10,6 +10,15 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/markdown">Markdown</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/login">Login</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/register">Register</router-link>
+          </li>
+          <li class="nav-item">
+            <a id="navA" class="nav-link" @click="logout">Logout</a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -18,7 +27,19 @@
 
 <script>
 export default {
-  name: "NavbarComponent"
+  name: "NavbarComponent",
+
+  data() {
+    return {
+      token: localStorage.getItem("token")
+    };
+  },
+
+  methods: {
+    logout() {
+      localStorage.removeItem("token");
+    }
+  }
 };
 </script>
 

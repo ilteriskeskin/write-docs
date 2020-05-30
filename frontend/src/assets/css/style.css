@@ -48,3 +48,12 @@ code {
     margin-left: 10%;
     margin-right: 10%;
 }
+
+#navA {
+    cursor: pointer;
+    color: #92badd;
+  }
+
+#navA:hover {
+    color: #0056b3;
+}
