@@ -11,13 +11,13 @@
             <router-link class="nav-link" to="/markdown">Markdown</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/login">Login</router-link>
+            <router-link class="nav-link" v-if="!token" to="/login">Login</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/register">Register</router-link>
+            <router-link class="nav-link" v-if="!token" to="/register">Register</router-link>
           </li>
           <li class="nav-item">
-            <a id="navA" class="nav-link" @click="logout">Logout</a>
+            <a id="navA" class="nav-link" v-if="token" @click="logout">Logout</a>
           </li>
         </ul>
       </nav>
@@ -38,6 +38,8 @@ export default {
   methods: {
     logout() {
       localStorage.removeItem("token");
+      // this.$router.push("/login");
+      window.location.href = "/login";
     }
   }
 };

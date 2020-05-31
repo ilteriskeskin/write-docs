@@ -20,7 +20,7 @@
         />
         <input
           v-model="password"
-          type="text"
+          type="password"
           id="password"
           class="fadeIn third"
           name="login"
@@ -53,8 +53,9 @@ export default {
       this.$http
         .post("/login", { username: this.username, password: this.password })
         .then(response => {
-          console.log(response);
           localStorage.setItem("token", response.data.token);
+          //this.$router.push('/markdown');
+          window.location.href = "/markdown";
         })
         .catch(function(error) {
           console.log(error);
@@ -64,7 +65,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "../../assets/css/style.css";
 
 /* BASIC */
@@ -180,7 +181,7 @@ input[type="reset"]:active {
   transform: scale(0.95);
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
@@ -201,12 +202,12 @@ input[type="text"] {
   border-radius: 5px 5px 5px 5px;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus, input[type="password"]:focus {
   background-color: #fff;
   border-bottom: 2px solid #5fbae9;
 }
 
-input[type="text"]:placeholder {
+input[type="text"]:placeholder, input[type="password"]:placeholder {
   color: #cccccc;
 }
 

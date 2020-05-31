@@ -26,7 +26,8 @@ class User(db.Model):
 
 class Docs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(100))
+    name = db.Column(db.String(50))
+    text = db.Column(db.String(1000))
     user_id = db.Column(db.Integer)
 
 
@@ -100,17 +101,16 @@ def create_user():
     db.session.commit()
 
     return jsonify({'message': 'New user created!'})
-    
 
 
-@app.route('/user<public_id>', methods=['PUT'])
-def promote_user(public_id):
-    return ''
+# @app.route('/user<public_id>', methods=['PUT'])
+# def promote_user(public_id):
+#     return ''
 
 
-@app.route('/user/<public_id>', methods=['DELETE'])
-def delete_user(public_id):
-    return ''
+# @app.route('/user/<public_id>', methods=['DELETE'])
+# def delete_user(public_id):
+#     return ''
 
 
 @app.route('/docs', methods=['POST'])
@@ -118,7 +118,8 @@ def delete_user(public_id):
 def create_content(current_user):
     data = request.get_json()
 
-    new_docs = Docs(text=data['text'], user_id=current_user.id)
+    new_docs = Docs(name=data['name'],
+                    text=data['text'], user_id=current_user.id)
     db.session.add(new_docs)
     db.session.commit()
 
@@ -133,23 +134,42 @@ def get_all_docs(current_user):
 
     for doc in docs:
         doc_data = {}
+        doc_data['name'] = doc.name
         doc_data['text'] = doc.text
         doc_data['id'] = doc.id
         output.append(doc_data)
 
     return jsonify({'docs': output})
 
+
+@app.route('/docs/<doc_id>', methods=['PUT'])
+@token_required
+def update_doc(current_user, doc_id):
+    data = request.get_json()
+    doc = Docs.query.filter_by(id=doc_id, user_id=current_user.id).first()
+
+    if not doc:
+        return jsonify({'message': 'No doc found!'})
+
+    doc.name = data['name']
+    doc.text = data['text']
+    db.session.commit()
+
+    return jsonify({'message': 'Doc item updated!'})
+
+
 @app.route('/docs/<doc_id>', methods=['DELETE'])
 @token_required
 def remove_doc(current_user, doc_id):
     doc = Docs.query.filter_by(id=doc_id, user_id=current_user.id).first()
-    
+
     if not doc:
         return jsonify({'message': 'No doc found!'})
-    
+
     db.session.delete(doc)
     db.session.commit()
     return jsonify({'message': 'Doc item deleted!'})
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -165,7 +185,7 @@ def login():
 
     if check_password_hash(user.password, data['password']):
         token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow(
-        ) + datetime.timedelta(minutes=5)}, app.config['SECRET_KEY'])
+        ) + datetime.timedelta(minutes=60)}, app.config['SECRET_KEY'])
 
         return jsonify({'token': token.decode('UTF-8')})
 
