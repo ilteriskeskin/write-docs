@@ -6,8 +6,8 @@ import VueSimpleMarkdown from 'vue-simple-markdown';
 import VueTextareaAutosize from 'vue-textarea-autosize';
 
 import axios from 'axios'
-//let baseURL = 'https://write-api.ilteris.ninja/'
-let baseURL = 'http://localhost:5000/'
+let baseURL = 'https://write-api.ilteris.ninja/'
+//let baseURL = 'http://localhost:5000/'
 
 Vue.prototype.baseURL = baseURL;
 Vue.prototype.$http = axios.create({
