@@ -6,6 +6,7 @@
       <select id="documents" v-model="selectedValue" v-if="docs.length > 0">
         <option v-for="doc in docs" :value="doc.id">{{ doc.name }}</option>
       </select>
+      <p v-else>Hiç dokümanınız bulunmamaktadır.</p>
 
       <br />
       <br />
@@ -43,8 +44,23 @@
             @click="update(selectedValue)"
             v-else-if="authStatus === 1 && selectedValue != ''"
           >Güncelle</button>
-          <button class="btn btn-danger" @click="removeDoc(selectedValue)">Sil</button>
+          <button
+            class="btn btn-danger"
+            @click="removeDoc(selectedValue)"
+            v-if="selectedValue != ''"
+          >Sil</button>
           <button class="btn btn-dark" @click="download">PDF Olarak İndir</button>
+          <br><br>  
+          <div v-if="authStatus === 1">
+            <span>Paylaş</span>
+            <input
+              type="checkbox"
+              id="share"
+              name="share"
+              value="Paylaş"
+              v-model="shareStatus"
+            />
+          </div>
         </div>
         <div class="col" v-if="previewStatus === 1">
           <h5>Önizleme</h5>
@@ -52,11 +68,13 @@
           <vue-simple-markdown :source="source"></vue-simple-markdown>
         </div>
       </div>
-      <br><br><br>
+      <br />
+      <br />
+      <br />
       <!-- <div v-for="doc in docs">
         {{doc}}
         <a @click="removeDoc(doc.id)">X</a>
-      </div> -->
+      </div>-->
     </div>
   </div>
 </template>
@@ -75,7 +93,8 @@ export default {
       previewStatus: 0,
       token: localStorage.getItem("token"),
       authStatus: 0,
-      docs: {}
+      docs: {},
+      shareStatus: false
     };
   },
 
@@ -90,6 +109,7 @@ export default {
         if (this.docs[i].id == this.selectedValue) {
           this.name = this.docs[i].name;
           this.source = this.docs[i].text;
+          this.shareStatus = this.docs[i].shareStatus;
         }
       }
     }
@@ -101,7 +121,7 @@ export default {
     },
 
     save() {
-      let data = { name: this.name, text: this.source };
+      let data = { name: this.name, text: this.source, shareStatus: this.shareStatus };
       this.$http
         .post("/docs", data, { headers: { Authorization: this.token } })
         .then(response => {
@@ -113,7 +133,7 @@ export default {
     },
 
     update(index) {
-      let data = { name: this.name, text: this.source };
+      let data = { name: this.name, text: this.source, shareStatus: this.shareStatus };
       this.$http
         .put("/docs/" + index, data, { headers: { Authorization: this.token } })
         .then(response => {
@@ -150,6 +170,9 @@ export default {
         .get("/docs", { headers: { Authorization: this.token } })
         .then(response => {
           this.docs = response.data.docs;
+          if (this.docs.length === 0) {
+            this.source = "# Empty :)";
+          }
         })
         .catch(function(error) {
           console.log(error);

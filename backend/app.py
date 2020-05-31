@@ -27,7 +27,8 @@ class User(db.Model):
 class Docs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    text = db.Column(db.String(1000))
+    text = db.Column(db.String(10000))
+    shareStatus = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer)
 
 
@@ -119,7 +120,9 @@ def create_content(current_user):
     data = request.get_json()
 
     new_docs = Docs(name=data['name'],
-                    text=data['text'], user_id=current_user.id)
+                    text=data['text'],
+                    shareStatus=data['shareStatus'],
+                    user_id=current_user.id)
     db.session.add(new_docs)
     db.session.commit()
 
@@ -136,6 +139,7 @@ def get_all_docs(current_user):
         doc_data = {}
         doc_data['name'] = doc.name
         doc_data['text'] = doc.text
+        doc_data['shareStatus'] = doc.shareStatus
         doc_data['id'] = doc.id
         output.append(doc_data)
 
@@ -153,6 +157,8 @@ def update_doc(current_user, doc_id):
 
     doc.name = data['name']
     doc.text = data['text']
+    doc.shareStatus = data['shareStatus']
+
     db.session.commit()
 
     return jsonify({'message': 'Doc item updated!'})
@@ -169,6 +175,39 @@ def remove_doc(current_user, doc_id):
     db.session.delete(doc)
     db.session.commit()
     return jsonify({'message': 'Doc item deleted!'})
+
+
+@app.route('/public_docs', methods=['GET'])
+def get_shared_docs():
+    docs = Docs.query.all()
+    output = []
+
+    for doc in docs:
+        if doc.shareStatus == True:
+            doc_data = {}
+            doc_data['name'] = doc.name
+            doc_data['text'] = doc.text
+            doc_data['shareStatus'] = doc.shareStatus
+            doc_data['id'] = doc.id
+            output.append(doc_data)
+
+    return jsonify({'docs': output})
+
+
+@app.route('/public_docs/<doc_id>', methods=['GET'])
+def get_one_public_doc(doc_id):
+    doc = Docs.query.filter_by(id=doc_id).first()
+
+    if not doc:
+        return jsonify({'message': 'No user found!'})
+
+    doc_data = {}
+    doc_data['name'] = doc.name
+    doc_data['text'] = doc.text
+    doc_data['shareStatus'] = doc.shareStatus
+    doc_data['id'] = doc.id
+
+    return jsonify({'doc': doc_data})
 
 
 @app.route('/login', methods=['POST'])

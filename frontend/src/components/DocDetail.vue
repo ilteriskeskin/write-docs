@@ -1,24 +1,21 @@
 <template>
   <div id="app" class="homeMain">
     <div class="container">
-      <div v-for="doc in docs">
-        <ul>
-          <li>
-            <router-link :to="{ name: 'DocDetail', params: { id: doc.id } }">{{ doc.name }}</router-link>
-          </li>
-        </ul>
-      </div>
+      <h3>{{ doc.name }}</h3>
+      <hr>
+      <vue-simple-markdown :source="doc.text"></vue-simple-markdown>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Home",
+  name: "DocDetail",
 
   data() {
     return {
-      docs: {}
+      id: this.$route.params.id,
+      doc: {}
     };
   },
 
@@ -29,10 +26,10 @@ export default {
   methods: {
     getDocs() {
       this.$http
-        .get("/public_docs")
+        .get("/public_docs/" + this.id)
         .then(response => {
           console.log(response);
-          this.docs = response.data.docs;
+          this.doc = response.data.doc;
         })
         .catch(function(error) {
           console.log(error);

@@ -59,6 +59,7 @@ export default {
         })
         .catch(function(error) {
           console.log(error);
+          alert('Hatalı kullanıcı adı ya da parola!');
         });
     }
   }
